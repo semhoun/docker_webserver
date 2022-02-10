@@ -1,0 +1,12 @@
+version: "3.2"
+
+services:
+    webserver:
+        build:
+            context: .
+        container_name: webserver
+        image: semhoun/webserver:${WEBSERVER_VERSION}
+        volumes:
+            - ./www/:/www/
+        ports:
+            - 8090:80
