@@ -103,4 +103,4 @@ env SERVER_ADMIN="webmaster@docker.test"
 # Docker starting params
 CMD ["/usr/bin/supervisord","-c","/opt/conf/supervisord.conf"]
 ENTRYPOINT ["/opt/bin/entrypoint.sh"]
-HEALTHCHECK --start-period=5s --interval=1m --timeout=5s --retries=3 CMD curl --fail http://localhost/.well-known/health || exit 1
+HEALTHCHECK --start-period=60s --interval=15s --timeout=5s --retries=3 CMD curl --fail http://localhost/.well-known/health || exit 1
