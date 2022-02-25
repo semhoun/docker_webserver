@@ -1,8 +1,9 @@
-# Docker Container Name
+# Semhoun's Webserver
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT) ![Badge Release](https://gitlab.com/semhoun/docker_webserver/-/badges/release.svg)  ![Docker Size](https://img.shields.io/docker/image-size/semhoun/webserver)  ![Docker Pull](https://img.shields.io/docker/pulls/semhoun/webserver)
 
-Docker who run apache and php-fpm webserver.
+Apache / PHP-FPM in one docker.
+
 Used in E-Dune infra.
 
 ## Getting Started
@@ -18,19 +19,33 @@ In order to run this container you'll need docker installed.
 
 ### Usage
 
-#### Exemple
+#### Docker
 
 ```shell
 docker run -v ./www:/www semhoun/webserver
 ```
+#### Docker Compose
+```yaml
+version: "3.2"
+
+services:
+  webserver:
+    container_name: webserver
+    image: semhoun/webserver
+    environment:
+      - SERVER_NAME="www.docker.test"
+      - SERVER_ADMIN="webmaster@docker.test"
+    volumes:
+      - ./www/:/www/
+    ports:
+      - 8080:80
+```
 
 #### Environment Variables
 
-* `SERVER_NAME` - Apache server name
-* `SERVER_ADMIN` - Apache webmaster mail
+* `SERVER_NAME` - Website url (ie: www.docker.test)
+* `SERVER_ADMIN` - Apache webmaster mail (ie: )
 * `DEBUG_MODE` - Debug mode (display php errors)
-
-*Both SERVER_NAME and SERVER_ADMIN must be setted otherwise default value will be used*
 
 #### Volumes
 
@@ -41,6 +56,8 @@ docker run -v ./www:/www semhoun/webserver
 * `/etc/apache2/conf-docker/` - Specific confs for docker
   
 * `/etc/apache2/conf-docker/20-htdocs.conf` - htdocs configuration (ex: /www/public)
+* `/etc/apache2/conf-docker/30-healthcheck.conf` - Health check alias configuration
+* `http://localhost/.well-known/healthcheck` - Health check url
 
 ## Built With
 
@@ -54,13 +71,9 @@ docker run -v ./www:/www semhoun/webserver
 * [GitLab](https://gitlab.com/semhoun/docker_webserver)
 * [DockerHub](https://hub.docker.com/repository/docker/semhoun/webserver)
 
-## Contributing
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
-
 ## Authors
 
-* **Nathanaël Semhoun** -  [semhoun](https://github.com/semhoun)
+* **Nathanaël Semhoun** -  [semhoun](https://gitlab.com/semhoun)
 
 ## License
 

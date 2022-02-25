@@ -4,12 +4,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV TERM=linux
 WORKDIR "/tmp"
 
-COPY patches /opt/patches/
-COPY bin/ /opt/bin/
-COPY service/ /service/
+COPY opt/ /opt/
 
 RUN apt-get update -y \
-  && apt-get install -y --no-install-recommends curl ca-certificates vim bash dos2unix wget git unzip \
+  && apt-get install -y --no-install-recommends curl ca-certificates vim bash dos2unix wget curl git unzip \
   && apt-get install -y apt-transport-https lsb-release ca-certificates \
   && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
   && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \
@@ -68,10 +66,11 @@ RUN apt-get update -y \
 # Configure Apache
   && a2enmod proxy_fcgi rewrite deflate alias actions headers \
   && rm /etc/apache2/apache2.conf \
+	&& mkdir -p /etc/apache2/conf-docker \
   \
   \
 # Configure permissions
-  && chmod +x /opt/bin/* /service/*/run \
+  && chmod +x /opt/bin/* \
   \
   \
 # Clean
@@ -85,10 +84,6 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-# Configure supervisord
-COPY conf/supervisord.conf /etc/supervisor/supervisord.conf
-
-
 # Configure Apache  
 COPY conf/apache/. /etc/apache2/
 
@@ -97,9 +92,15 @@ COPY conf/php/* /etc/php/8.0/fpm/conf.d/
 COPY conf/php/* /etc/php/8.0/cli/conf.d/
 COPY conf/php-fpm.conf /etc/php/8.0/fpm/php-fpm.conf
 
+# WWW dir
 WORKDIR "/www"
 VOLUME ["/www"]
 
-# Start Daemontools
-CMD ["/usr/bin/supervisord","-c","/etc/supervisor/supervisord.conf"]
-ENTRYPOINT ["/opt/bin/docker-entrypoint.sh"]
+# Default env values
+env SERVER_NAME="www.docker.test"
+env SERVER_ADMIN="webmaster@docker.test"
+
+# Docker starting params
+CMD ["/usr/bin/supervisord","-c","/opt/conf/supervisord.conf"]
+ENTRYPOINT ["/opt/bin/entrypoint.sh"]
+HEALTHCHECK --start-period=5s --interval=1m --timeout=5s --retries=3 CMD curl --fail http://localhost/.well-known/health || exit 1
