@@ -1,6 +1,6 @@
 # Semhoun's Webserver
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT) ![Badge Release](https://gitlab.com/semhoun/docker_webserver/-/badges/release.svg)  ![Docker Size](https://img.shields.io/docker/image-size/semhoun/webserver)  ![Docker Pull](https://img.shields.io/docker/pulls/semhoun/webserver)
+[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)  ![Docker Size](https://img.shields.io/docker/image-size/semhoun/webserver)  ![Docker Pull](https://img.shields.io/docker/pulls/semhoun/webserver)
 
 Apache / PHP-FPM in one docker.
 
