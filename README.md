@@ -44,7 +44,7 @@ services:
 #### Environment Variables
 
 * `SERVER_NAME` - Website url (ie: www.docker.test)
-* `SERVER_ADMIN` - Apache webmaster mail (ie: )
+* `SERVER_ADMIN` - Apache webmaster mail (ie: webmaster@docker.test)
 * `DEBUG_MODE` - Debug mode (display php errors)
 
 #### Volumes
@@ -63,7 +63,7 @@ services:
 
 * Debian bullseye
 * Apache
-* PHP 8.0
+* PHP 7.4.1
 * Supervisor
 
 ## Find Us

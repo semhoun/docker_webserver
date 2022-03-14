@@ -22,12 +22,12 @@ RUN apt-get update -y \
     apache2 apache2-utils \
     imagemagick graphicsmagick exiftran \
     locales aspell-fr \
-    php8.0-fpm php8.0 php8.0-cli php8.0-common php8.0-curl php8.0-gd php8.0-imap php8.0-mysql php8.0-pspell php8.0-snmp \
-    php8.0-sqlite3 php8.0-xsl php8.0-intl php8.0-mbstring php8.0-zip php8.0-bcmath php8.0-xml php8.0-imagick php8.0-redis php8.0-memcache \
-    php8.0-dev php8.0-apcu php8.0-gmp \
+    php7.4-fpm php7.4 php7.4-cli php7.4-common php7.4-curl php7.4-gd php7.4-imap php7.4-mysql php7.4-pspell php7.4-snmp \
+    php7.4-sqlite3 php7.4-xsl php7.4-intl php7.4-mbstring php7.4-zip php7.4-bcmath php7.4-xml php7.4-imagick php7.4-redis php7.4-memcache \
+    php7.4-dev php7.4-apcu php7.4-gmp \
   # Fix for added by debfault
-  && apt-get purge -y php7* php8.1* \
-	&& cp /usr/sbin/php-fpm8.0 /usr/sbin/php-fpm \
+  && apt-get purge -y php7.1 php7.2 php7.3 php8* \
+	&& cp /usr/sbin/php-fpm7.4 /usr/sbin/php-fpm \
   \
   \
 # Configure www user  
@@ -74,7 +74,7 @@ RUN apt-get update -y \
   \
   \
 # Clean
-  && apt-get -y purge php8.0-dev \
+  && apt-get -y purge php7.4-dev \
   && apt-get -y autoremove \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
@@ -88,9 +88,9 @@ ENV LC_ALL en_US.UTF-8
 COPY conf/apache/. /etc/apache2/
 
 # Configure PHP
-COPY conf/php/* /etc/php/8.0/fpm/conf.d/
-COPY conf/php/* /etc/php/8.0/cli/conf.d/
-COPY conf/php-fpm.conf /etc/php/8.0/fpm/php-fpm.conf
+COPY conf/php/* /etc/php/7.4/fpm/conf.d/
+COPY conf/php/* /etc/php/7.4/cli/conf.d/
+COPY conf/php-fpm.conf /etc/php/7.4/fpm/php-fpm.conf
 
 # WWW dir
 WORKDIR "/www"
