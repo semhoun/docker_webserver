@@ -36,7 +36,7 @@ RUN apt-get update -y \
   && usermod www-data -s /bin/bash \
   \
   \
-# Add www user
+# Add libgeos
   && apt-get install -y libgeos-dev \
   && git clone https://github.com/ModelTech/php-geos.git \
   && ( \
@@ -95,6 +95,9 @@ COPY conf/php-fpm.conf /etc/php/8.0/fpm/php-fpm.conf
 # WWW dir
 WORKDIR "/www"
 VOLUME ["/www"]
+
+#Expose port
+EXPOSE 80
 
 # Default env values
 env SERVER_NAME="www.docker.test"
