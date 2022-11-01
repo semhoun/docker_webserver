@@ -63,6 +63,10 @@ RUN apt-get update -y \
   && mv composer.phar /usr/bin/composer \
   \
   \
+# Install grunt
+  && npm install -g grunt \
+  \
+  \
 # Configure Apache
   && a2enmod proxy_fcgi rewrite deflate alias actions headers \
   && rm /etc/apache2/apache2.conf \
