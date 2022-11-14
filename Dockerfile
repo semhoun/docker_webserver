@@ -8,40 +8,24 @@ RUN apt-get update -y \
   && apt-get install -y apt-transport-https lsb-release ca-certificates \
   && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
   && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \
-	&& curl -sL https://deb.nodesource.com/setup_18.x | bash - \
   && apt-get update \
 	\
   && apt-get install -y supervisor \
-	\
-	&& apt-get install -y nodejs \
 	\
   && apt-get install -y \
     apache2 apache2-utils \
     imagemagick graphicsmagick exiftran \
     locales aspell-fr \
-    php8.1-fpm php8.1 php8.1-cli php8.1-common php8.1-curl php8.1-gd php8.1-imap php8.1-mysql php8.1-pspell php8.1-snmp \
-    php8.1-sqlite3 php8.1-xsl php8.1-intl php8.1-mbstring php8.1-zip php8.1-bcmath php8.1-xml php8.1-imagick php8.1-redis php8.1-memcache \
-    php8.1-dev php8.1-apcu php8.1-gmp \
+    php5.6-fpm php5.6 php5.6-cli php5.6-common php5.6-curl php5.6-gd php5.6-imap php5.6-mysql php5.6-pspell php5.6-snmp \
+    php5.6-sqlite3 php5.6-xsl php5.6-intl php5.6-mbstring php5.6-zip php5.6-bcmath php5.6-xml php5.6-imagick php5.6-redis php5.6-memcache \
+		php5.6-apcu php5.6-gmp \
   # Fix for added by debfault
-  && apt-get purge -y php7* php8.0* \
-	&& cp /usr/sbin/php-fpm8.1 /usr/sbin/php-fpm \
+  && apt-get purge -y php7* php8* \
+	&& cp /usr/sbin/php-fpm5.6 /usr/sbin/php-fpm \
   \
   \
 # Configure www user  
   && usermod www-data -s /bin/bash \
-  \
-  \
-# Add libgeos
-  && apt-get install -y libgeos-dev \
-  && git clone https://github.com/ModelTech/php-geos.git \
-  && ( \
-    cd php-geos \
-    && ./autogen.sh \
-    && ./configure \
-    && make \
-    && make install \
-  ) \
-  && rm -r php-geos \
   \
   \
 # Configure locales
@@ -52,22 +36,12 @@ RUN apt-get update -y \
   && /usr/sbin/locale-gen en_US.UTF-8 \
   \
   \
-# Install composer
-  && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-  && php composer-setup.php \
-  && mv composer.phar /usr/bin/composer \
-  \
-  \
-# Install grunt
-  && npm install -g grunt \
-  \
-  \
 # Configure Apache
   && a2enmod proxy_fcgi rewrite deflate alias actions headers \
   \
   \
 # Clean
-  && apt-get -y purge php8.1-dev \
+  && apt-get -y purge \
   && apt-get -y autoremove \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
