@@ -2,9 +2,6 @@ FROM debian:bullseye-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TERM=linux
-WORKDIR "/tmp"
-
-COPY opt/ /opt/
 
 RUN apt-get update -y \
   && apt-get install -y --no-install-recommends curl ca-certificates vim bash dos2unix wget curl git unzip \
@@ -27,16 +24,14 @@ RUN apt-get update -y \
     php7.4-dev php7.4-apcu php7.4-gmp \
   # Fix for added by debfault
   && apt-get purge -y php7.1 php7.2 php7.3 php8* \
-	&& cp /usr/sbin/php-fpm7.4 /usr/sbin/php-fpm \
+	&& ln -s /usr/sbin/php-fpm7.4 /usr/sbin/php-fpm \
   \
   \
 # Configure www user  
-	&& mkdir /www \
-  && chown -R www-data.www-data /www \
   && usermod www-data -s /bin/bash \
   \
   \
-# Add www user
+# Add libgeos
   && apt-get install -y libgeos-dev \
   && git clone https://github.com/ModelTech/php-geos.git \
   && ( \
@@ -59,7 +54,7 @@ RUN apt-get update -y \
   \
 # Install composer
   && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-  && php composer-setup.php \
+  && php composer-setup.php --2.2 \
   && mv composer.phar /usr/bin/composer \
   \
   \
@@ -69,42 +64,37 @@ RUN apt-get update -y \
   \
 # Configure Apache
   && a2enmod proxy_fcgi rewrite deflate alias actions headers \
-  && rm /etc/apache2/apache2.conf \
-	&& mkdir -p /etc/apache2/conf-docker \
-  \
-  \
-# Configure permissions
-  && chmod +x /opt/bin/* \
   \
   \
 # Clean
-  && apt-get -y purge php7.4-dev \
+  && apt-get -y purge php8.1-dev \
   && apt-get -y autoremove \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+
+# Managing root fs
+COPY rootfs/ /
+RUN chown -R www-data.www-data /www \
+	&& chmod +x /opt/bin/*
 
 # Encoding fix
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-# Configure Apache  
-COPY conf/apache/. /etc/apache2/
-
-# Configure PHP
-COPY conf/php/* /etc/php/7.4/fpm/conf.d/
-COPY conf/php/* /etc/php/7.4/cli/conf.d/
-COPY conf/php-fpm.conf /etc/php/7.4/fpm/php-fpm.conf
+# Default env values
+ENV SERVER_NAME="www.docker.test"
+ENV SERVER_ADMIN="webmaster@docker.test"
+ENV DEBUG_MODE="false" 
 
 # WWW dir
 WORKDIR "/www"
 VOLUME ["/www"]
 
-# Default env values
-env SERVER_NAME="www.docker.test"
-env SERVER_ADMIN="webmaster@docker.test"
+#Expose port
+EXPOSE 80
 
 # Docker starting params
-CMD ["/usr/bin/supervisord","-c","/opt/conf/supervisord.conf"]
+CMD ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
 ENTRYPOINT ["/opt/bin/entrypoint.sh"]
 HEALTHCHECK --start-period=60s --interval=15s --timeout=5s --retries=3 CMD curl --fail http://localhost/.well-known/health || exit 1
