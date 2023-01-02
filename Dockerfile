@@ -24,7 +24,7 @@ RUN apt-get update -y \
     php8.1-dev php8.1-apcu php8.1-gmp \
   # Fix for added by debfault
   && apt-get purge -y php7* php8.0* \
-	&& cp /usr/sbin/php-fpm8.1 /usr/sbin/php-fpm \
+	&& ln -s /usr/sbin/php-fpm8.1 /usr/sbin/php-fpm \
   \
   \
 # Configure www user  
