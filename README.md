@@ -30,7 +30,6 @@ version: "3.2"
 
 services:
   webserver:
-    container_name: webserver
     image: semhoun/webserver
     environment:
       - SERVER_NAME="www.docker.test"
