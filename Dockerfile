@@ -29,6 +29,7 @@ RUN apt-get update -y \
   \
 # Configure www user  
   && usermod www-data -s /bin/bash \
+	&& chown -R www-data.www-data /var/www \
   \
   \
 # Add libgeos
