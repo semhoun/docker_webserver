@@ -24,6 +24,12 @@ RUN apt-get update -y \
 	&& cp /usr/sbin/php-fpm5.6 /usr/sbin/php-fpm \
   \
   \
+# Install composer
+  && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+  && php composer-setup.php --1 \
+  && mv composer.phar /usr/bin/composer \
+  \
+  \
 # Configure www user  
   && usermod www-data -s /bin/bash \
   \
