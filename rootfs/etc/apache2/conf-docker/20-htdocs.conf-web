@@ -1,0 +1,12 @@
+DocumentRoot /www/web
+
+DirectoryIndex index.php index.html
+
+<Directory />
+	AllowOverride None
+</Directory>
+<Directory /www/web>
+	AllowOverride All
+	Options FollowSymLinks
+	Require all granted
+</Directory>

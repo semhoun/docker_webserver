@@ -9,6 +9,8 @@ ServerAdmin ${SERVER_ADMIN}
 EOF
 	if [ -d "/www/public" ]; then
 		cp /etc/apache2/conf-docker/20-htdocs.conf-public /etc/apache2/conf-docker/20-htdocs.conf
+	elif [ -d "/www/web" ]; then
+		cp /etc/apache2/conf-docker/20-htdocs.conf-web /etc/apache2/conf-docker/20-htdocs.conf
 	else
 		cp /etc/apache2/conf-docker/20-htdocs.conf-root /etc/apache2/conf-docker/20-htdocs.conf
 	fi
