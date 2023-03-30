@@ -5,6 +5,9 @@ DirectoryIndex index.php index.html
 <Directory />
 	AllowOverride None
 </Directory>
+<DirectoryMatch "^/.*/\.git/">
+  Deny from all
+</Directorymatch>
 <Directory /www/web>
 	AllowOverride All
 	Options FollowSymLinks
