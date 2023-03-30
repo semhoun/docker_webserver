@@ -2,14 +2,12 @@ version: "3.2"
 
 services:
   webserver:
-    build:
-      context: .
-    container_name: webserver
+    build: {}
     image: semhoun/webserver:${WEBSERVER_VERSION}
     environment:
       - SERVER_NAME="www.docker.test"
       - SERVER_ADMIN="webmaster@docker.test"
     volumes:
-      - ./www/:/www/
+      - ./rootfs/www/:/www/
     ports:
-      - 8090:80
+      - 8000:80
