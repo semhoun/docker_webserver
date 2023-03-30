@@ -1,11 +1,14 @@
-DocumentRoot /www/public
+DocumentRoot /www
 
 DirectoryIndex index.php index.html
 
 <Directory />
 	AllowOverride None
 </Directory>
-<Directory /www/public>
+<DirectoryMatch "^/.*/\.git/">
+  Deny from all
+</Directorymatch>
+<Directory /www>
 	AllowOverride All
 	Options FollowSymLinks
 	Require all granted
