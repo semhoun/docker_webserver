@@ -19,12 +19,12 @@ RUN apt-get update -y \
     apache2 apache2-utils \
     imagemagick graphicsmagick exiftran \
     locales aspell-fr \
-    php7.4-fpm php7.4 php7.4-cli php7.4-common php7.4-curl php7.4-gd php7.4-imap php7.4-mysql php7.4-pspell php7.4-snmp \
-    php7.4-sqlite3 php7.4-xsl php7.4-intl php7.4-mbstring php7.4-zip php7.4-bcmath php7.4-xml php7.4-imagick php7.4-redis php7.4-memcache \
-    php7.4-dev php7.4-apcu php7.4-gmp \
+    php7.1-fpm php7.1 php7.1-cli php7.1-common php7.1-curl php7.1-gd php7.1-imap php7.1-mysql php7.1-pspell php7.1-snmp \
+    php7.1-sqlite3 php7.1-xsl php7.1-intl php7.1-mbstring php7.1-zip php7.1-bcmath php7.1-xml php7.1-imagick php7.1-redis php7.1-memcache \
+    php7.1-dev php7.1-apcu php7.1-gmp \
   # Fix for added by debfault
-  && apt-get purge -y php7.1 php7.2 php7.3 php8* \
-	&& ln -s /usr/sbin/php-fpm7.4 /usr/sbin/php-fpm \
+  && apt-get purge -y php7.4 php7.2 php7.3 php8* \
+	&& ln -s /usr/sbin/php-fpm7.1 /usr/sbin/php-fpm \
   \
   \
 # Configure www user  
