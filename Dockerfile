@@ -8,28 +8,23 @@ RUN apt-get update -y \
   && apt-get install -y apt-transport-https lsb-release ca-certificates \
   && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
   && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \
-	&& curl -sL https://deb.nodesource.com/setup_20.x | bash - \
+  && curl -sL https://deb.nodesource.com/setup_20.x | bash - \
   && apt-get update \
-	\
+  \
   && apt-get install -y supervisor \
-	\
-	&& apt-get install -y nodejs \
-	\
+  \
+  && apt-get install -y nodejs \
+  \
   && apt-get install -y \
     apache2 apache2-utils \
     imagemagick graphicsmagick exiftran \
     locales aspell-fr \
     php8.2-fpm php8.2 php8.2-cli php8.2-common php8.2-curl php8.2-gd php8.2-imap php8.2-mysql php8.2-pspell php8.2-snmp \
     php8.2-sqlite3 php8.2-xsl php8.2-intl php8.2-mbstring php8.2-zip php8.2-bcmath php8.2-xml php8.2-imagick php8.2-redis php8.2-memcache \
-    php8.2-dev php8.2-apcu php8.2-gmp \
+    php8.2-dev php8.2-apcu php8.2-gmp php8.2-ldap \
   # Fix for added by debfault
   && apt-get purge -y php7* php8.0* php8.1* \
-	&& ln -s /usr/sbin/php-fpm8.2 /usr/sbin/php-fpm \
-  \
-  \
-# Configure www user  
-  && usermod www-data -s /bin/bash \
-	&& chown -R www-data.www-data /var/www \
+  && ln -s /usr/sbin/php-fpm8.2 /usr/sbin/php-fpm \
   \
   \
 # Add libgeos
@@ -73,10 +68,11 @@ RUN apt-get update -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
-# Managing root fs
+# Managing root fs and www-data user
 COPY rootfs/ /
-RUN chown -R www-data.www-data /www \
-	&& chmod +x /opt/bin/*
+RUN chown -R www-data:www-data /www \
+  && usermod www-data -s /bin/bash -d /www \
+  && chmod +x /opt/bin/*
 
 # Encoding fix
 ENV LANG en_US.UTF-8
