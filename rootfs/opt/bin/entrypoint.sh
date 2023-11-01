@@ -14,7 +14,7 @@ EOF
 	fi
 	
 	if [ "${DEBUG_MODE}" == "true" ]; then
-		cat >  /etc/php/8.1/fpm/conf.d/99-debug.ini << 'EOF'
+		cat >  /etc/php/8.2/fpm/conf.d/99-debug.ini << 'EOF'
 display_errors = On
 display_startup_errors = On
 EOF
