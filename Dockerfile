@@ -64,13 +64,14 @@ RUN apt-get update -y \
   \
 # Configure Apache
   && a2enmod proxy_fcgi rewrite deflate alias actions headers \
+  && a2disconf other-vhosts-access-log.conf \
   \
   \
 # Clean
-  && apt-get -y purge php8.1-dev \
+  && apt-get -y purge php8.2-dev \
   && apt-get -y autoremove \
   && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /var/log/apache2
 
 # Managing root fs
 COPY rootfs/ /
