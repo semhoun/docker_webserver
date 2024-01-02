@@ -8,13 +8,13 @@ RUN apt-get update -y \
   && apt-get install -y apt-transport-https lsb-release ca-certificates \
   && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
   && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \
-	&& curl -sL https://deb.nodesource.com/setup_16.x | bash - \
+  && curl -sL https://deb.nodesource.com/setup_16.x | bash - \
   && apt-get update \
-	\
+  \
   && apt-get install -y supervisor \
-	\
-	&& apt-get install -y nodejs \
-	\
+  \
+  && apt-get install -y nodejs \
+  \
   && apt-get install -y \
     apache2 apache2-utils \
     imagemagick graphicsmagick exiftran \
@@ -68,7 +68,7 @@ RUN apt-get update -y \
   \
   \
 # Clean
-  && apt-get -y purge php8.1-dev \
+  && apt-get -y purge php7.3-dev \
   && apt-get -y autoremove \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /var/log/apache2
