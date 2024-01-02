@@ -3,7 +3,6 @@ version: "3.2"
 services:
   webserver:
     build: {}
-    image: semhoun/webserver:${WEBSERVER_VERSION}
     environment:
       - SERVER_NAME="www.docker.test"
       - SERVER_ADMIN="webmaster@docker.test"
