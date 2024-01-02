@@ -24,7 +24,7 @@ RUN apt-get update -y \
     php7.3-dev php7.3-apcu php7.3-gmp \
   # Fix for added by debfault
   && apt-get purge -y php7.1 php7.2 php7.3 php8* \
-	&& ln -s /usr/sbin/php-fpm7.3 /usr/sbin/php-fpm \
+  && ln -s /usr/sbin/php-fpm7.3 /usr/sbin/php-fpm \
   \
   \
 # Configure www user  
@@ -64,13 +64,14 @@ RUN apt-get update -y \
   \
 # Configure Apache
   && a2enmod proxy_fcgi rewrite deflate alias actions headers \
+  && a2disconf other-vhosts-access-log.conf \
   \
   \
 # Clean
   && apt-get -y purge php8.1-dev \
   && apt-get -y autoremove \
   && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /var/log/apache2
 
 # Managing root fs
 COPY rootfs/ /
