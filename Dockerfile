@@ -8,13 +8,13 @@ RUN apt-get update -y \
   && apt-get install -y apt-transport-https lsb-release ca-certificates \
   && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
   && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \
-	&& curl -sL https://deb.nodesource.com/setup_18.x | bash - \
+  && curl -sL https://deb.nodesource.com/setup_18.x | bash - \
   && apt-get update \
-	\
+  \
   && apt-get install -y supervisor \
-	\
-	&& apt-get install -y nodejs \
-	\
+  \
+  && apt-get install -y nodejs \
+  \
   && apt-get install -y \
     apache2 apache2-utils \
     imagemagick graphicsmagick exiftran \
@@ -24,7 +24,7 @@ RUN apt-get update -y \
     php8.1-dev php8.1-apcu php8.1-gmp \
   # Fix for added by debfault
   && apt-get purge -y php7* php8.0* \
-	&& cp /usr/sbin/php-fpm8.1 /usr/sbin/php-fpm \
+  && cp /usr/sbin/php-fpm8.1 /usr/sbin/php-fpm \
   \
   \
 # Configure www user  
@@ -68,7 +68,7 @@ RUN apt-get update -y \
   \
   \
 # Clean
-  && apt-get -y purge php8.2-dev \
+  && apt-get -y purge php8.1-dev \
   && apt-get -y autoremove \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /var/log/apache2
@@ -76,7 +76,7 @@ RUN apt-get update -y \
 # Managing root fs
 COPY rootfs/ /
 RUN chown -R www-data.www-data /www \
-	&& chmod +x /opt/bin/*
+  && chmod +x /opt/bin/*
 
 # Encoding fix
 ENV LANG en_US.UTF-8
