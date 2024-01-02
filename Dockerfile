@@ -48,7 +48,6 @@ RUN apt-get update -y \
   \
   \
 # Clean
-  && apt-get -y purge \
   && apt-get -y autoremove \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /var/log/apache2
