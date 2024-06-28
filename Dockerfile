@@ -51,6 +51,24 @@ RUN apt-get update -y \
   && a2disconf other-vhosts-access-log.conf \
   \
   \
+# Install fcron
+  && curl -o /tmp/fcron.src.tar.gz http://fcron.free.fr/archives/fcron-3.3.1.src.tar.gz \
+  && mkdir -p /tmp/fcron \
+  && tar xzf /tmp/fcron.src.tar.gz -C /tmp/fcron --strip-components=1 \
+  && cd /tmp/fcron \
+  && ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --with-sysfcrontab=no \
+    --with-answer-all \
+    --with-sendmail=no \
+    --with-boot-install=no \
+    --with-systemdsystemunitdir=no \
+  && make \
+  && make install \
+  \
+  \
 # Clean
   && apt-get -y purge php8.2-dev \
   && apt-get -y autoremove \

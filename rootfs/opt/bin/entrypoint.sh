@@ -21,6 +21,9 @@ EOF
 	fi
 fi
 
+rm -rf /var/spool/fcron/root
+/usr/bin/fcrontab -n /etc/fcron/fcrontab-root root
+
 rm -f /var/run/apache2.pid 
 rm -f /var/run/php-fpm.sock
 
