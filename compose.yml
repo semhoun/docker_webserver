@@ -8,3 +8,8 @@ services:
       - ./rootfs/www/:/www/
     ports:
       - 8000:80
+
+networks:
+  default:
+    name: internal
+    external: true

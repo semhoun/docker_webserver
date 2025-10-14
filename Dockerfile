@@ -82,9 +82,9 @@ RUN chown -R www-data:www-data /www \
   && chmod +x /opt/bin/*
 
 # Encoding fix
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 
 # Default env values
 ENV SERVER_NAME="www.docker.test"
