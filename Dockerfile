@@ -47,6 +47,10 @@ RUN apt-get update -y \
   && install composer.phar /usr/bin/composer \
   \
   \
+# Install OpenTelemetry
+  && pecl install opentelemetry \
+  \
+  \
 # Install grunt
   && npm install -g grunt \
   \
@@ -77,7 +81,7 @@ RUN apt-get update -y \
   \
 # Clean
   && apt-get -y purge php8.4-dev \
-	autoconf build-essential docbook docbook-xsl docbook-xml docbook-utils manpages-dev \
+    autoconf build-essential docbook docbook-xsl docbook-xml docbook-utils manpages-dev \
   && apt-get -y autoremove \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /var/log/apache2
