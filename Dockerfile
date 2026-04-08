@@ -46,7 +46,7 @@ RUN apt-get update -y \
   \
   \
 # Install php addons \
-  && install-php-extensions bcmath bz2 curl exif gd gmp intl mbstring opcache pcntl pdo_mysql pdo_pgsql pdo_sqlite redis sodium xsl zip ldap apcu \
+  && install-php-extensions bcmath bz2 curl exif gd gmp intl mbstring opcache pcntl mysqli pdo_mysql pdo_pgsql pdo_sqlite redis sodium xsl zip ldap apcu \
   && pecl install opentelemetry \
   && docker-php-ext-enable opentelemetry \
   && pecl install imagick memcache \
@@ -73,12 +73,28 @@ RUN apt-get update -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
+# Copy rootfs
+COPY rootfs /
+
 RUN mkdir -p /var/www \
   && chown -R www-data:www-data /var/www \
   && usermod www-data -s /bin/bash -d /var/www
-
-# Copy rootfs
-COPY rootfs /
+  
+# Manage permissions
+RUN mkdir -p \
+    /config/caddy \
+    /data/caddy \
+    /etc/caddy \
+    /usr/share/caddy \
+  && touch /etc/caddy/Caddyfile \
+  && chown -R www-data:www-data \
+    /config/caddy \
+    /data/caddy \
+    /etc/caddy \
+    /usr/share/caddy \
+    /usr/local/etc \
+  && chmod +x /opt/bin/* \
+  && setcap -r /usr/local/bin/frankenphp
 
 # Encoding fix
 ENV LANG=en_US.UTF-8
@@ -97,6 +113,9 @@ WORKDIR "/www"
 
 #Expose port
 EXPOSE 80 443
+
+# User
+USER www-data
 
 # Docker starting params
 CMD ["/usr/local/bin/frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
