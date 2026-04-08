@@ -2,8 +2,7 @@ services:
   webserver:
     build: {}
     environment:
-      - SERVER_NAME="www.docker.test"
-      - SERVER_ADMIN="webmaster@docker.test"
+      SERVER_NAME: www.docker.test
     volumes:
       - ./rootfs/www/:/www/
     ports:

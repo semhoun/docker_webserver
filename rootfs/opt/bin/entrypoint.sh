@@ -2,29 +2,65 @@
 
 set -e
 
-if [ ! -f "/etc/apache2/conf-docker/20-htdocs.conf" ]; then
-	cat > /etc/apache2/conf-docker/15-location.conf << EOF
-ServerName ${SERVER_NAME}
-ServerAdmin ${SERVER_ADMIN}
-EOF
-	if [ -d "/www/public" ]; then
-		cp /etc/apache2/conf-docker/20-htdocs.conf-public /etc/apache2/conf-docker/20-htdocs.conf
-	else
-		cp /etc/apache2/conf-docker/20-htdocs.conf-root /etc/apache2/conf-docker/20-htdocs.conf
-	fi
-	
-	if [ "${DEBUG_MODE}" == "true" ]; then
-		cat >  /etc/php/8.4/fpm/conf.d/99-debug.ini << 'EOF'
+cp /opt/conf/php/*  ${PHP_INI_DIR}/conf.d/
+if [ "${DEBUG_MODE}" == "true" ]; then
+  cp  ${PHP_INI_DIR}/php.ini-development  ${PHP_INI_DIR}/php.ini
+  cat > ${PHP_INI_DIR}/conf.d/99-debug.ini << 'EOF'
 display_errors = On
 display_startup_errors = On
 EOF
-	fi
+else
+  cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 fi
 
-rm -rf /var/spool/fcron/root
-/usr/bin/fcrontab -n /etc/fcron/fcrontab-root root
+/opt/bin/cleansession.sh
 
-rm -f /var/run/apache2.pid 
-rm -f /var/run/php-fpm.sock
+ROOT_DIR="/www/public"
+if [ ! -d "/www/public" ]; then
+  ROOT_DIR="/www"
+fi
 
-exec $@
+mkdir -p /etc/caddy
+TRACING_BLOCK=''
+if [ -n "${OTEL_EXPORTER_OTLP_ENDPOINT}" ]; then
+TRACING_BLOCK='  tracing {
+      span "{method} {uri}"
+    }
+    request_header X-Trace-Id {http.vars.trace_id}
+'
+fi
+SITE_ADDRESS=':80'
+CADDY_HTTPS_OPTIONS='  auto_https off'
+if [ "${ENABLE_LETSENCRYPT}" = "true" ] && [ -n "${ACME_EMAIL}" ]; then
+  SITE_ADDRESS="${SERVER_NAME}"
+  CADDY_HTTPS_OPTIONS="  email ${ACME_EMAIL}"
+fi
+cat > /etc/caddy/Caddyfile << EOF
+{
+  frankenphp
+  order php_server before file_server
+  log {
+    output stderr
+  }
+  metrics
+  ${CADDY_HTTPS_OPTIONS}
+}
+
+${SITE_ADDRESS} {
+  root * ${ROOT_DIR}
+  encode zstd gzip
+
+  php_server {
+    index index.php
+  }
+  file_server
+
+  log {
+    output stdout
+    format formatted "{common_log}"
+  }
+${TRACING_BLOCK}
+}
+EOF
+
+exec "$@"

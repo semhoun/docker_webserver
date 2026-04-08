@@ -1,38 +1,43 @@
-FROM debian:trixie-slim
+FROM dunglas/frankenphp:builder-php8.4-trixie AS frankenphp-builder
+
+# Copy xcaddy in the builder image
+COPY --from=caddy:builder /usr/bin/xcaddy /usr/bin/xcaddy
+
+# CGO must be enabled to build FrankenPHP
+RUN CGO_ENABLED=1 \
+    XCADDY_SETCAP=1 \
+    XCADDY_GO_BUILD_FLAGS="-ldflags='-w -s' -tags=nobadger,nomysql,nopgx" \
+    CGO_CFLAGS=$(php-config --includes) \
+    CGO_LDFLAGS="$(php-config --ldflags) $(php-config --libs)" \
+    xcaddy build \
+        --output /usr/local/bin/frankenphp \
+        --with github.com/dunglas/frankenphp=./ \
+        --with github.com/dunglas/frankenphp/caddy=./caddy/ \
+        --with github.com/dunglas/caddy-cbrotli \
+        # Mercure and Vulcain are included in the official build, but feel free to remove them
+        --with github.com/dunglas/mercure/caddy \
+        --with github.com/dunglas/vulcain/caddy \
+        # Add extra Caddy modules here
+        --with github.com/caddyserver/transform-encoder
+
+FROM dunglas/frankenphp:php8.4-trixie
+
+COPY --from=frankenphp-builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TERM=linux
 
 RUN apt-get update -y \
-  && apt-get install -y --no-install-recommends curl ca-certificates vim bash dos2unix wget curl git unzip gpg \
-  && apt-get install -y apt-transport-https lsb-release ca-certificates \
-  && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
-  && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \
-  && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-  && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_24.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
-  && apt-get update \
-  \
-  && apt-get install -y supervisor \
-  \
-  && apt-get install -y nodejs \
-  \
-  && apt-get install -y \
-    apache2 apache2-utils \
-    imagemagick graphicsmagick exiftran \
+  && apt-get install -y --no-install-recommends curl wget ca-certificates bash dos2unix git unzip gpg \
+    iputils-ping iproute2 less vim \
     locales aspell-fr \
-    php8.4-fpm php8.4 php8.4-cli php8.4-common php8.4-curl php8.4-gd php8.4-imap php8.4-mysql php8.4-pspell php8.4-snmp \
-    php8.4-sqlite3 php8.4-xsl php8.4-intl php8.4-mbstring php8.4-zip php8.4-bcmath php8.4-xml php8.4-imagick php8.4-redis php8.4-memcache \
-    php8.4-dev php8.4-apcu php8.4-gmp php8.4-ldap php8.4-pgsql php8.4-bz2 \
+    imagemagick graphicsmagick exiftran \
   \
-  && apt-get install -y \
-    autoconf build-essential docbook docbook-xsl docbook-xml docbook-utils manpages-dev \
-  \
-  # Fix for added by debfault
-  && apt-get purge -y php7* php8.0* php8.1* php8.2* php8.3*\
-  && ln -s /usr/sbin/php-fpm8.4 /usr/sbin/php-fpm \
+# Dev packages \
+  && apt-get install -y libmemcached-dev zlib1g-dev libmagickwand-dev \
   \
   \
-# Configure locales
+# Configure locales \
   && sed \
     -e 's/# fr_FR.UTF-8 UTF-8/fr_FR.UTF-8 UTF-8/' \
     -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' \
@@ -40,57 +45,40 @@ RUN apt-get update -y \
   && /usr/sbin/locale-gen en_US.UTF-8 \
   \
   \
-# Install composer
+# Install php addons \
+  && install-php-extensions bcmath bz2 curl exif gd gmp intl mbstring opcache pcntl pdo_mysql pdo_pgsql pdo_sqlite redis sodium xsl zip ldap apcu \
+  && pecl install opentelemetry \
+  && docker-php-ext-enable opentelemetry \
+  && pecl install imagick memcache \
+  && docker-php-ext-enable imagick memcache \
+  \
+  \
+# Install composer \
   && cd /tmp \
   && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
   && php composer-setup.php \
   && install composer.phar /usr/bin/composer \
   \
   \
-# Install OpenTelemetry
-  && pecl install opentelemetry \
+# Install ember
+  && EMBER_LATEST_TAG=$(curl -fsSL https://api.github.com/repos/alexandre-daubois/ember/releases/latest | grep '"tag_name"' | head -1 | sed 's/.*"tag_name": *"//;s/".*//') \
+  && curl -fsSL -o /tmp/ember.tar.gz https://github.com/alexandre-daubois/ember/releases/download/${EMBER_LATEST_TAG}/ember_${EMBER_LATEST_TAG#v}_linux_amd64.tar.gz \
+  && tar -xzf  /tmp/ember.tar.gz -C /tmp \
+  && install ember /usr/local/bin/ \
   \
   \
-# Install grunt
-  && npm install -g grunt \
-  \
-  \
-# Configure Apache
-  && a2enmod proxy_fcgi rewrite deflate alias actions headers \
-  && a2disconf other-vhosts-access-log.conf \
-  \
-  \
-# Install fcron
-  && curl -L -o /tmp/fcron.tar.gz https://github.com/yo8192/fcron/archive/refs/tags/ver3_4_0.tar.gz \
-  && mkdir -p /tmp/fcron \
-  && cd /tmp/fcron \
-  && tar xzf /tmp/fcron.tar.gz --strip 1 \
-  && autoconf \
-  && ./configure \
-    --prefix=/usr \
-    --sysconfdir=/etc \
-    --localstatedir=/var \
-    --with-sysfcrontab=no \
-    --with-answer-all \
-    --without-sendmail \
-    --with-boot-install=no \
-    --with-systemdsystemunitdir=no \
-  && make \
-  && make install \
-  \
-  \
-# Clean
-  && apt-get -y purge php8.4-dev \
-    autoconf build-essential docbook docbook-xsl docbook-xml docbook-utils manpages-dev \
+# Clean \
+  && apt-get -y purge libmemcached-dev zlib1g-dev libmagickwand-dev \
   && apt-get -y autoremove \
   && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /var/log/apache2
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
-# Managing root fs and www-data user
-COPY rootfs/ /
-RUN chown -R www-data:www-data /www \
-  && usermod www-data -s /bin/bash -d /www \
-  && chmod +x /opt/bin/*
+RUN mkdir -p /var/www \
+  && chown -R www-data:www-data /var/www \
+  && usermod www-data -s /bin/bash -d /var/www
+
+# Copy rootfs
+COPY rootfs /
 
 # Encoding fix
 ENV LANG=en_US.UTF-8
@@ -98,18 +86,18 @@ ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 
 # Default env values
-ENV SERVER_NAME="www.docker.test"
-ENV SERVER_ADMIN="webmaster@docker.test"
-ENV DEBUG_MODE="false" 
+ENV DEBUG_MODE="false"
+ENV ENABLE_LETSENCRYPT="false"
+ENV ACME_EMAIL=""
+ENV QUEUE_WORKERS="2"
 
-# WWW dir
-WORKDIR "/www"
+# Volume
 VOLUME ["/www"]
+WORKDIR "/www"
 
 #Expose port
-EXPOSE 80
+EXPOSE 80 443
 
 # Docker starting params
-CMD ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
+CMD ["/usr/local/bin/frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
 ENTRYPOINT ["/opt/bin/entrypoint.sh"]
-HEALTHCHECK --start-period=60s --interval=15s --timeout=5s --retries=3 CMD curl --fail http://localhost/.well-known/health || exit 1
