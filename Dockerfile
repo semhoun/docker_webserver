@@ -9,12 +9,9 @@ RUN apt-get update -y \
   && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
   && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \
   && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-  && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_24.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
   && apt-get update \
   \
   && apt-get install -y supervisor \
-  \
-  && apt-get install -y nodejs \
   \
   && apt-get install -y \
     apache2 apache2-utils \
@@ -49,10 +46,6 @@ RUN apt-get update -y \
   \
 # Install OpenTelemetry
   && pecl install opentelemetry \
-  \
-  \
-# Install grunt
-  && npm install -g grunt \
   \
   \
 # Configure Apache
@@ -112,4 +105,4 @@ EXPOSE 80
 # Docker starting params
 CMD ["/usr/bin/supervisord","-c","/etc/supervisord.conf"]
 ENTRYPOINT ["/opt/bin/entrypoint.sh"]
-HEALTHCHECK --start-period=60s --interval=15s --timeout=5s --retries=3 CMD curl --fail http://localhost/.well-known/health || exit 1
+HEALTHCHECK --start-period=30s --interval=15s --timeout=5s --retries=3 CMD curl --fail http://localhost/.well-known/health || exit 1
