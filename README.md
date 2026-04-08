@@ -4,7 +4,8 @@
 [![Docker Image Size](https://img.shields.io/docker/image-size/semhoun/webserver)](https://hub.docker.com/r/semhoun/webserver)
 [![Docker Pulls](https://img.shields.io/docker/pulls/semhoun/webserver)](https://hub.docker.com/r/semhoun/webserver)
 
-A modern, high-performance PHP webserver Docker image built on **FrankenPHP** (Caddy + PHP-FPM).
+A modern, high-performance PHP webserver Docker image built on
+**FrankenPHP** (Caddy + PHP-FPM).
 
 ## Features
 
@@ -106,7 +107,7 @@ docker build -t my-webserver .
 
 The server includes a health check endpoint:
 
-```
+```text
 http://localhost/.well-known/healthcheck
 ```
 
@@ -116,8 +117,8 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Links
 
-- **GitLab**: https://gitlab.com/semhoun/docker_webserver
-- **DockerHub**: https://hub.docker.com/r/semhoun/webserver
+- **GitLab**: <https://gitlab.com/semhoun/docker_webserver>
+- **DockerHub**: <https://hub.docker.com/r/semhoun/webserver>
 
 ## Author
 
