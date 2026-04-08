@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:builder-php8.4-trixie AS frankenphp-builder
+FROM dunglas/frankenphp:builder-php8.5-trixie AS frankenphp-builder
 
 # Copy xcaddy in the builder image
 COPY --from=caddy:builder /usr/bin/xcaddy /usr/bin/xcaddy
@@ -20,7 +20,7 @@ RUN CGO_ENABLED=1 \
         # Add extra Caddy modules here
         --with github.com/caddyserver/transform-encoder
 
-FROM dunglas/frankenphp:php8.4-trixie
+FROM dunglas/frankenphp:php8.5-trixie
 
 COPY --from=frankenphp-builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp
 
@@ -49,8 +49,8 @@ RUN apt-get update -y \
   && install-php-extensions bcmath bz2 curl exif gd gmp intl mbstring opcache pcntl mysqli pdo_mysql pdo_pgsql pdo_sqlite redis sodium xsl zip ldap apcu \
   && pecl install opentelemetry \
   && docker-php-ext-enable opentelemetry \
-  && pecl install imagick memcache \
-  && docker-php-ext-enable imagick memcache \
+  && pecl install imagick \
+  && docker-php-ext-enable imagick \
   \
   \
 # Install composer \

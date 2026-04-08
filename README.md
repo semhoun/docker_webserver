@@ -76,8 +76,8 @@ services:
 
 This image is based on:
 
-- Debian Trixie (testing)
-- FrankenPHP (Caddy + PHP 8.4)
+- Debian Trixie
+- FrankenPHP (starting at php 8.4)
 - Multi-stage build for optimized image size
 
 ## Branches & Tags
@@ -86,7 +86,8 @@ Multiple PHP versions are available via different branches/tags:
 
 | PHP Version | Branch | Tags |
 |-------------|--------|------|
-| 8.4 | `main` | `8.4.x`, `latest` |
+| 8.5 | `main` | `8.5.x`, `latest` |
+| 8.4 | `php-8.4` | `8.5.x` |
 | 8.2 | `php-8.2` | `8.2.x` |
 | 8.1 | `php-8.1` | `8.1.x` |
 | 8.0 | `php-8.0` | `8.0.x` |
@@ -103,21 +104,13 @@ cd docker_webserver
 docker build -t my-webserver .
 ```
 
-## Health Checks
-
-The server includes a health check endpoint:
-
-```text
-http://localhost/.well-known/healthcheck
-```
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
 ## Links
 
-- **GitLab**: <https://gitlab.com/semhoun/docker_webserver>
+- **Github**: <https://github.com/semhoun/docker_webserver>
 - **DockerHub**: <https://hub.docker.com/r/semhoun/webserver>
 
 ## Author
