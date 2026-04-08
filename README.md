@@ -5,7 +5,7 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/semhoun/webserver)](https://hub.docker.com/r/semhoun/webserver)
 
 A modern, high-performance PHP webserver Docker image built on
-**FrankenPHP** (Caddy + PHP-FPM).
+**FrankenPHP**
 
 ## Features
 
