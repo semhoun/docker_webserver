@@ -34,7 +34,7 @@ RUN apt-get update -y \
     imagemagick graphicsmagick exiftran \
   \
 # Dev packages \
-  && apt-get install -y libmemcached-dev zlib1g-dev libmagickwand-dev \
+  && apt-get install -y libmagickwand-dev \
   \
   \
 # Configure locales \
@@ -68,7 +68,7 @@ RUN apt-get update -y \
   \
   \
 # Clean \
-  && apt-get -y purge libmemcached-dev zlib1g-dev libmagickwand-dev \
+  && apt-get -y purge libmagickwand-dev \
   && apt-get -y autoremove \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
