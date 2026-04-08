@@ -1,79 +1,124 @@
 # Semhoun's Webserver
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)  ![Docker Size](https://img.shields.io/docker/image-size/semhoun/webserver)  ![Docker Pull](https://img.shields.io/docker/pulls/semhoun/webserver)
+[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
+[![Docker Image Size](https://img.shields.io/docker/image-size/semhoun/webserver)](https://hub.docker.com/r/semhoun/webserver)
+[![Docker Pulls](https://img.shields.io/docker/pulls/semhoun/webserver)](https://hub.docker.com/r/semhoun/webserver)
 
-Apache / PHP-FPM in one docker.
+A modern, high-performance PHP webserver Docker image built on **FrankenPHP** (Caddy + PHP-FPM).
 
-Used in E-Dune infra.
+## Features
 
-## Getting Started
+- **FrankenPHP** - Modern PHP application server built on Caddy
+- **PHP 8.4** with extensive extension support
+- **Automatic HTTPS** with Let's Encrypt support
+- **HTTP/2** and **HTTP/3** support
+- **Brotli** and **Gzip** compression
+- **OpenTelemetry** tracing support
+- Production and development modes
 
-### Prerequisities
+## Quick Start
 
-
-In order to run this container you'll need docker installed.
-
-* [Windows](https://docs.docker.com/windows/started)
-* [OS X](https://docs.docker.com/mac/started/)
-* [Linux](https://docs.docker.com/linux/started/)
-
-### Usage
-
-#### Docker
+### Docker
 
 ```shell
-docker run -v ./www:/www semhoun/webserver
+docker run -v ./www:/www -p 8080:80 semhoun/webserver
 ```
-#### Docker Compose
-```yaml
-version: "3.2"
 
+### Docker Compose
+
+```yaml
 services:
   webserver:
     image: semhoun/webserver
     environment:
-      - SERVER_NAME="www.docker.test"
-      - SERVER_ADMIN="webmaster@docker.test"
+      SERVER_NAME: "www.example.com"
     volumes:
       - ./www/:/www/
     ports:
-      - 8080:80
+      - "8080:80"
 ```
 
-#### Environment Variables
+## Configuration
 
-* `SERVER_NAME` - Website url (ie: www.docker.test)
-* `SERVER_ADMIN` - Apache webmaster mail (ie: )
-* `DEBUG_MODE` - Debug mode (display php errors)
+### Environment Variables
 
-#### Volumes
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `SERVER_NAME` | Website domain name | `:80` |
+| `DEBUG_MODE` | Enable PHP debug mode (`true`/`false`) | `false` |
+| `ENABLE_LETSENCRYPT` | Enable automatic HTTPS | `false` |
+| `ACME_EMAIL` | Email for Let's Encrypt registration | - |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | OpenTelemetry collector endpoint | - |
+| `QUEUE_WORKERS` | Number of queue workers | `2` |
 
-* `/www` - Website location (www/public would be detected as root directory)
+### Volumes
 
-#### Useful File Locations
+| Path | Description |
+|------|-------------|
+| `/www` | Website files (auto-detects `/www/public` as document root) |
 
-* `/etc/apache2/conf-docker/` - Specific confs for docker
-  
-* `/etc/apache2/conf-docker/20-htdocs.conf` - htdocs configuration (ex: /www/public)
-* `/etc/apache2/conf-docker/30-healthcheck.conf` - Health check alias configuration
-* `http://localhost/.well-known/healthcheck` - Health check url
+### PHP Extensions Included
 
-## Built With
+- **Core**: bcmath, bz2, curl, exif, gd, gmp, intl, mbstring, opcache, pcntl
+- **Database**: pdo_mysql, pdo_pgsql, pdo_sqlite, redis
+- **Security**: sodium, ldap, apcu
+- **Other**: xsl, zip, imagick, memcache, opentelemetry
 
-* Debian bullseye
-* Apache
-* PHP 8.0
-* Supervisor
+### Built-in Tools
 
-## Find Us
+- **Composer** - PHP dependency manager
+- **Ember** - Real-time monitoring dashboard CLI for Caddy & FrankenPHP
+- **Git** - Version control
+- **Vim** - Text editor
 
-* [GitLab](https://gitlab.com/semhoun/docker_webserver)
-* [DockerHub](https://hub.docker.com/repository/docker/semhoun/webserver)
+## Architecture
 
-## Authors
+This image is based on:
 
-* **Nathanaël Semhoun** -  [semhoun](https://gitlab.com/semhoun)
+- Debian Trixie (testing)
+- FrankenPHP (Caddy + PHP 8.4)
+- Multi-stage build for optimized image size
+
+## Branches & Tags
+
+Multiple PHP versions are available via different branches/tags:
+
+| PHP Version | Branch | Tags |
+|-------------|--------|------|
+| 8.4 | `main` | `8.4.x`, `latest` |
+| 8.2 | `php-8.2` | `8.2.x` |
+| 8.1 | `php-8.1` | `8.1.x` |
+| 8.0 | `php-8.0` | `8.0.x` |
+| 7.4 | `php-7.4` | `7.4.x` |
+| 7.3 | `php-7.3` | `7.3.x` |
+| 7.1 | `php-7.1` | `7.1.x` |
+| 5.6 | `php-5.6` | `5.6.x` |
+
+## Building from Source
+
+```shell
+git clone https://gitlab.com/semhoun/docker_webserver.git
+cd docker_webserver
+docker build -t my-webserver .
+```
+
+## Health Checks
+
+The server includes a health check endpoint:
+
+```
+http://localhost/.well-known/healthcheck
+```
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+## Links
+
+- **GitLab**: https://gitlab.com/semhoun/docker_webserver
+- **DockerHub**: https://hub.docker.com/r/semhoun/webserver
+
+## Author
+
+**Nathanaël Semhoun** - [@semhoun](https://gitlab.com/semhoun)

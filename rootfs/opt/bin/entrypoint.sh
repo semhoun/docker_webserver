@@ -2,15 +2,15 @@
 
 set -e
 
-cp /opt/conf/php/*  ${PHP_INI_DIR}/conf.d/
+cp /opt/conf/php/*  "${PHP_INI_DIR}/conf.d/"
 if [ "${DEBUG_MODE}" == "true" ]; then
-  cp  ${PHP_INI_DIR}/php.ini-development  ${PHP_INI_DIR}/php.ini
-  cat > ${PHP_INI_DIR}/conf.d/99-debug.ini << 'EOF'
+  cp  "${PHP_INI_DIR}/php.ini-development"  "${PHP_INI_DIR}/php.ini"
+  cat > "${PHP_INI_DIR}/conf.d/99-debug.ini" << 'EOF'
 display_errors = On
 display_startup_errors = On
 EOF
 else
-  cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
+  cp "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
 fi
 
 /opt/bin/cleansession.sh
