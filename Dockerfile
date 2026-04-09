@@ -34,7 +34,7 @@ RUN apt-get update -y \
     imagemagick graphicsmagick exiftran \
   \
 # Dev packages \
-  && apt-get install -y libmagickwand-dev \
+  && apt-get install -y libmagickwand-dev libmemcached-dev zlib1g-dev \
   \
   \
 # Configure locales \
@@ -47,7 +47,7 @@ RUN apt-get update -y \
   \
 # Install php addons \
   && install-php-extensions bcmath bz2 curl exif gd gmp intl mbstring opcache pcntl \
-  mysqli pdo_mysql pdo_pgsql pdo_sqlite redis ldap \
+  mysqli pdo_mysql pdo_pgsql pdo_sqlite redis ldap memcached \
   sodium xsl zip apcu \
   opentelemetry imagick \
   \
@@ -67,7 +67,7 @@ RUN apt-get update -y \
   \
   \
 # Clean \
-  && apt-get -y purge libmagickwand-dev \
+  && apt-get -y purge libmagickwand-dev libmemcached-dev zlib1g-dev \
   && apt-get -y autoremove \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
