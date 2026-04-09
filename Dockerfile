@@ -46,11 +46,10 @@ RUN apt-get update -y \
   \
   \
 # Install php addons \
-  && install-php-extensions bcmath bz2 curl exif gd gmp intl mbstring opcache pcntl mysqli pdo_mysql pdo_pgsql pdo_sqlite redis sodium xsl zip ldap apcu \
-  && pecl install opentelemetry \
-  && docker-php-ext-enable opentelemetry \
-  && pecl install imagick \
-  && docker-php-ext-enable imagick \
+  && install-php-extensions bcmath bz2 curl exif gd gmp intl mbstring opcache pcntl \
+  mysqli pdo_mysql pdo_pgsql pdo_sqlite redis ldap \
+  sodium xsl zip apcu \
+  opentelemetry imagick \
   \
   \
 # Install composer \
